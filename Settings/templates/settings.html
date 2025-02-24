@@ -4,36 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
-    <style>
-        .container{
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 50%;
-            position: absolute;
-            left: 30%;
-        }
-        .info{
-            display: grid;
-            border: 2px solid black;
-            height: 300px;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="info">
-            <span>Username : Jhon Doe</span>
-            <br>
-            <span>Profile Photo : <img src="" alt="profile-pic" width="24px" height="24px"></span>
-            <br>
-            <span>Bio : Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ut nobis temporibus id, ex placeat nihil odit nemo saepe quia ducimus dolorem maiores aliquam reprehenderit aliquid ipsam amet laudantium ullam veniam.</span>
-            <br>
-            <span>Email : jhondoe123@gmail.com</span>
-            <br>
-            <span><button>Reset Password</button></span>
-        </div>
+    <h2>Settings</h2>
+    <div class="info">
+        <p>Username: {{ user.username }}</p>
+        <p>Email: {{ user.email }}</p>
+        <p>Profile Picture: <img src="{{ user.profile_picture.url }}" alt="profile-pic" width="100" height="100"></p>
+        <p><a href="{% url 'password_change' %}">Change Password</a></p>
     </div>
 </body>
 </html>

@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import *
+from .views import settings_view
 
-urlspattern = [
-    path('', settings_view)
+urlpatterns = [
+    path('', settings_view, name='settings'),
 ]

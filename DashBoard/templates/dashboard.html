@@ -4,162 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <style>
-        .post{
-            background-color: antiquewhite;
-            min-width: 100px;
-            max-width: 50vw;
-            padding: 20px;
-            position: relative;
-        }
-        .subcontents{
-            padding-right: 5px;
-        }
-        .addpost .add-btn{
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 30px;
-            width: 30px;
-            border-radius: 9px;
-        }
-        
-        .addpost{
-            border: 2px solid black;
-            position: fixed;
-            right:10px;
-            background-color: orange;
-        }
-        
-        .edit-options .edit-btn{
-            background: none;
-            border:none;
-            position: absolute;
-            right: 10px;
-            top:10px;
-        }
-        .list-items{
-            display: none;
-        }
-        .list-items ul{
-            position: absolute;
-            padding: 1px;
-            right: 10px;
-            background-color: rgb(210, 136, 39);
-            height: 90px;
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            flex-wrap: nowrap;
-            width:max-content;
-        }
-        .list-items ul li{
-            list-style-type: none;
-            border:1px solid black;
-            padding: 3px;
-            margin:0px 0px 2px 0px;
-            cursor:pointer;
-        }
-    </style>
 </head>
 <body>
-    <div class="addpost">
-        <span>Create Post</span>
-        <button class="add-btn" onclick="window.location('post.html')">+</button>
-    </div>
+    <h1>My Posts</h1>
+    <a href="{% url 'create_post' %}">Create Post</a>
     <div class="posts">
-        <h1>My Posts</h1>
-        <div class="post 1">
-            <span class="edit-options">
-                <button class="edit-btn" onclick="editList()">📝</button>
-                <span class="list-items">
-                    <ul>
-                        <li>Edit post</li>
-                        <li>Delete Post</li>
-                        <li>Share Post</li>
-                    </ul>
-                </span>
-            </span>
-            <span class="subcontents user">
-                <img src="" alt="user-profile" height="24px" width="24px">
-                Alice
-            </span>
-            <div class="content">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ullam saepe corrupti aliquid! Accusantium aliquid ad, cupiditate sed recusandae suscipit accusamus cumque voluptate odio quis eaque quos numquam quidem eveniet minus!
-            </div>
-            <span class="hashtag">#post #blog</span>
-            <hr>
-            <span class="subcontents like">👍 100</span>
-            <span class="subcontents dislike">👎 50</span>
-            <span class="subcontents reply">💬 10</span>
+        {% for post in posts %}
+        <div class="post">
+            <h2>{{ post.title }}</h2>
+            <p>{{ post.content }}</p>
+            {% if post.image %}
+            <img src="{{ post.image.url }}" alt="{{ post.title }}">
+            {% endif %}
+            <p>Tags: {{ post.tags }}</p>
+            <a href="{% url 'edit_post' post.id %}">Edit</a>
+            <a href="{% url 'delete_post' post.id %}">Delete</a>
         </div>
-        <br>
-        <div class="post 2">
-            <span class="edit-options">
-                <button class="edit-btn" onclick="editList()">📝</button>
-                <span class="list-items">
-                    <ul>
-                        <li>Edit post</li>
-                        <li>Delete Post</li>
-                        <li>Share Post</li>
-                    </ul>
-                </span>
-            </span>
-            <span class="subcontents user">
-                <img src="" alt="user-profile" height="24px" width="24px">
-                Alice
-            </span>
-            <div class="content">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ullam saepe corrupti aliquid! Accusantium aliquid ad, cupiditate sed recusandae suscipit accusamus cumque voluptate odio quis eaque quos numquam quidem eveniet minus!
-            </div>
-            <span class="hashtag">#post #blog</span>
-            <hr>
-            <span class="subcontents like">👍 100</span>
-            <span class="subcontents dislike">👎 50</span>
-            <span class="subcontents reply">💬 10</span>
-        </div>
-        <br>
-        <div class="post 3">
-            <span class="edit-options">
-                <button class="edit-btn" onclick="editList()">📝</button>
-                <span class="list-items">
-                    <ul>
-                        <li>Edit post</li>
-                        <li>Delete Post</li>
-                        <li>Share Post</li>
-                    </ul>
-                </span>
-            </span>
-            <span class="subcontents user">
-                <img src="" alt="user-profile" height="24px" width="24px">
-                Alice
-            </span>
-            <div class="content">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ullam saepe corrupti aliquid! Accusantium aliquid ad, cupiditate sed recusandae suscipit accusamus cumque voluptate odio quis eaque quos numquam quidem eveniet minus!
-            </div>
-            <span class="hashtag">#post #blog</span>
-            <hr>
-            <span class="subcontents like">👍 100</span>
-            <span class="subcontents dislike">👎 50</span>
-            <span class="subcontents reply">💬 10</span>
-        </div>
+        {% endfor %}
     </div>
-    
-
-    <script>
-        edit = true;
-        function editList(){
-            items=document.getElementsByClassName("list-items");
-            if(edit){
-                console.log();
-                items='block'
-                edit = false;
-            }
-            else{
-                items='none';
-                edit = true;
-            }
-        }
-    </script>
 </body>
 </html>
