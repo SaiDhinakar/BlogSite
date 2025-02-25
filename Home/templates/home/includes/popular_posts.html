@@ -1,0 +1,23 @@
+<div class="popular-posts">
+    <h4 class="mb-3">Popular Posts</h4>
+    {% if popular_posts %}
+        {% for post in popular_posts %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <a href="{% url 'post_detail' post.slug %}" class="text-decoration-none">
+                            {{ post.title }}
+                        </a>
+                    </h6>
+                    <div class="small text-muted">
+                        <i class="fas fa-eye"></i> {{ post.views }} views
+                        <span class="mx-1">•</span>
+                        <i class="fas fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">No popular posts yet.</p>
+    {% endif %}
+</div>

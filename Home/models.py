@@ -4,13 +4,18 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+from django.db.models import F
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(unique=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = 'Categories'
+        ordering = ['name']
     
     def __str__(self):
         return self.name
@@ -22,10 +27,10 @@ class Category(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    slug = models.SlugField(unique=True, max_length=200)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     content = models.TextField()
-    featured_image = models.ImageField(upload_to='blog_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='blog_images/', blank=True, null=True)
     excerpt = models.TextField(max_length=200, blank=True)
     categories = models.ManyToManyField(Category, related_name='posts')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,26 +48,25 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
-        if not self.excerpt and self.content:
-            self.excerpt = self.content[:197] + '...'
         super().save(*args, **kwargs)
     
     def get_absolute_url(self):
         return reverse('post_detail', kwargs={'slug': self.slug})
     
     def increment_views(self):
-        self.views += 1
+        self.views = F('views') + 1
         self.save(update_fields=['views'])
+        self.refresh_from_db()
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=True)
-    
+
     class Meta:
-        ordering = ['created_at']
-    
+        ordering = ['-created_at']
+
     def __str__(self):
         return f'Comment by {self.author.username} on {self.post.title}'

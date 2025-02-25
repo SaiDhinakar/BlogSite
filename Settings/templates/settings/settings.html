@@ -1,0 +1,100 @@
+{% extends 'home/base.html' %}
+
+{% block title %}Settings - BlogSite{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Profile Settings</h2>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Profile Image -->
+                        <div class="text-center mb-4">
+                            <div class="profile-image mx-auto mb-3">
+                                {% if user.profile_image %}
+                                    <img src="{{ user.profile_image.url }}" alt="Profile" class="profile-img">
+                                {% else %}
+                                    <div class="profile-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="upload-btn-wrapper">
+                                {{ form.profile_image }}
+                                <button class="btn btn-outline-primary btn-sm">Change Profile Photo</button>
+                            </div>
+                        </div>
+
+                        <!-- Basic Info Section -->
+                        <div class="settings-section mb-4">
+                            <h5 class="settings-title">Basic Information</h5>
+                            <div class="p-3 bg-light rounded">
+                                <div class="mb-3">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.username.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-0">
+                                    <label for="{{ form.bio.id_for_label }}" class="form-label">Bio</label>
+                                    {{ form.bio }}
+                                    <small class="text-muted">Tell others about yourself</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Password Change Section -->
+                        <div class="settings-section mb-4">
+                            <h5 class="settings-title">Change Password</h5>
+                            <div class="p-3 bg-light rounded">
+                                <div class="mb-3">
+                                    <label for="{{ form.current_password.id_for_label }}" class="form-label">Current Password</label>
+                                    {{ form.current_password }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.new_password.id_for_label }}" class="form-label">New Password</label>
+                                    {{ form.new_password }}
+                                </div>
+
+                                <div class="mb-0">
+                                    <label for="{{ form.confirm_password.id_for_label }}" class="form-label">Confirm Password</label>
+                                    {{ form.confirm_password }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

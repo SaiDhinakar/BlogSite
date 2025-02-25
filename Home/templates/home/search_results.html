@@ -1,8 +1,8 @@
 <!-- home/templates/home/search_results.html -->
-{% extends 'base.html' %}
+{% extends 'home/base.html' %}
 {% load static %}
 
-{% block title %}Search Results{% endblock %}
+{% block title %}Search Results - BlogSite{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -147,12 +147,6 @@
 <header class="search-header">
     <div class="container">
         <h1 class="search-title">Search Results for "{{ query }}"</h1>
-        <form action="{% url 'search_posts' %}" method="GET" class="search-form">
-            <input type="text" name="q" value="{{ query }}" placeholder="Search posts..." class="search-input">
-            <button type="submit" class="search-button">
-                <i class="fas fa-search"></i>
-            </button>
-        </form>
     </div>
 </header>
 
@@ -160,67 +154,43 @@
 <div class="container">
     <div class="row">
         <div class="col-12">
-            <h3 class="mb-4">{{ page_obj.paginator.count }} result{{ page_obj.paginator.count|pluralize }} found</h3>
-            
-            <div class="row" id="posts-container">
-                {% for post in page_obj %}
-                    {% include 'home/includes/post_card.html' %}
-                {% endfor %}
-            </div>
-            
-            {% if page_obj.has_other_pages %}
-                <div class="pagination-container mt-5 mb-5">
-                    <nav aria-label="Page navigation">
+            {% if total_results %}
+                <p class="text-muted mb-4">Found {{ total_results }} result{{ total_results|pluralize }}</p>
+                
+                <div class="row" id="search-results">
+                    {% for post in page_obj %}
+                        <div class="col-md-6 mb-4">
+                            {% include 'home/includes/post_card.html' %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if page_obj.has_other_pages %}
+                    <nav aria-label="Search results pages" class="mt-4">
                         <ul class="pagination justify-content-center">
                             {% if page_obj.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?q={{ query }}&page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                            {% else %}
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
+                                    <a class="page-link" href="?q={{ query }}&page={{ page_obj.previous_page_number }}">Previous</a>
                                 </li>
                             {% endif %}
-                            
+
                             {% for num in page_obj.paginator.page_range %}
-                                {% if page_obj.number == num %}
-                                    <li class="page-item active">
-                                        <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
-                                    </li>
-                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
-                                    </li>
-                                {% endif %}
+                                <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                    <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+                                </li>
                             {% endfor %}
-                            
+
                             {% if page_obj.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?q={{ query }}&page={{ page_obj.next_page_number }}" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            {% else %}
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
+                                    <a class="page-link" href="?q={{ query }}&page={{ page_obj.next_page_number }}">Next</a>
                                 </li>
                             {% endif %}
                         </ul>
                     </nav>
-                </div>
-            {% endif %}
-            
-            {% if not page_obj %}
-                <div class="no-results text-center my-5 py-5">
-                    <i class="fas fa-search fa-4x text-muted mb-3"></i>
-                    <h3>No results found for "{{ query }}"</h3>
-                    <p class="text-muted">Try different keywords or check your spelling</p>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    No results found for your search query.
                 </div>
             {% endif %}
         </div>

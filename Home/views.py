@@ -10,6 +10,10 @@ from .models import Post, Category, Comment
 from .forms import PostForm, CommentForm
 # Import for AJAX rendering
 from django.template.loader import render_to_string
+from django.utils.text import slugify
+from django.contrib import messages
+from datetime import timedelta
+from django.contrib.auth import get_user_model
 
 def home(request):
     # Get latest published posts
@@ -18,8 +22,12 @@ def home(request):
     # Get featured categories
     categories = Category.objects.all()[:5]
     
-    # Get popular posts
-    popular_posts = Post.objects.filter(is_published=True).order_by('-views')[:3]
+    # Get popular posts from the last 30 days
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    popular_posts = Post.objects.filter(
+        is_published=True,
+        created_at__gte=thirty_days_ago
+    ).order_by('-views', '-created_at')[:3]
     
     # Pagination
     paginator = Paginator(posts, 6)  # Show 6 posts per page
@@ -110,7 +118,7 @@ def search_posts(request):
     if query:
         posts = Post.objects.filter(
             Q(title__icontains=query) | 
-            Q(content__icontains=query) |
+            Q(content__icontains=query) |  
             Q(author__username__icontains=query),
             is_published=True
         ).distinct()
@@ -125,6 +133,7 @@ def search_posts(request):
     context = {
         'query': query,
         'page_obj': page_obj,
+        'total_results': posts.count(),
     }
     
     return render(request, 'home/search_results.html', context)
@@ -136,13 +145,21 @@ def create_post(request):
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
+            # Generate slug from title
+            post.slug = slugify(post.title)
             post.save()
-            form.save_m2m()  # For categories many-to-many field
+            form.save_m2m()  # Save categories
+            messages.success(request, 'Post created successfully!')
             return redirect('post_detail', slug=post.slug)
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = PostForm()
     
-    return render(request, 'home/post_form.html', {'form': form, 'action': 'Create'})
+    return render(request, 'home/post_form.html', {
+        'form': form,
+        'action': 'Create'
+    })
 
 @login_required
 def edit_post(request, slug):
@@ -172,25 +189,51 @@ def delete_post(request, slug):
 @require_POST
 def add_comment(request, slug):
     post = get_object_or_404(Post, slug=slug)
-    form = CommentForm(request.POST)
     
+    form = CommentForm(request.POST)
     if form.is_valid():
         comment = form.save(commit=False)
         comment.post = post
         comment.author = request.user
         comment.save()
         
-        return JsonResponse({
-            'status': 'success',
-            'comment_id': comment.id,
-            'author': comment.author.username,
-            'content': comment.content,
-            'created_at': comment.created_at.strftime("%b %d, %Y, %H:%M")
-        })
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'status': 'success',
+                'comment': {
+                    'content': comment.content,
+                    'author': comment.author.username,
+                    'created_at': comment.created_at.strftime("%b %d, %Y, %H:%M"),
+                    'id': comment.id
+                }
+            })
+        messages.success(request, 'Comment added successfully.')
+    else:
+        messages.error(request, 'Error adding comment. Please try again.')
     
-    return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    return redirect('post_detail', slug=post.slug)
 
 @login_required
 def user_posts(request):
-    posts = Post.objects.filter(author=request.user)
+    posts = Post.objects.filter(author=request.user).order_by('-created_at')
     return render(request, 'home/user_posts.html', {'posts': posts})
+
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, 'home/category_list.html', {'categories': categories})
+
+def author_posts(request, username):
+    author = get_object_or_404(get_user_model(), username=username)
+    posts = Post.objects.filter(author=author, is_published=True)
+    
+    # Pagination
+    paginator = Paginator(posts, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'author': author,
+    }
+    
+    return render(request, 'home/author_posts.html', context)

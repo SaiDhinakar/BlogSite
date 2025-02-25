@@ -1,320 +1,77 @@
-<!-- home/templates/home/index.html -->
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'home/base.html' %}
 
-{% block title %}Blog Home{% endblock %}
-
-{% block extra_css %}
-<style>
-    .hero {
-        background: linear-gradient(to right, #6a11cb, #2575fc);
-        padding: 100px 0;
-        color: white;
-        text-align: center;
-        margin-bottom: 50px;
-    }
-    
-    .hero h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-    }
-    
-    .hero p {
-        font-size: 1.2rem;
-        max-width: 700px;
-        margin: 0 auto 30px;
-    }
-    
-    .post-card {
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        overflow: hidden;
-        transition: all 0.3s ease;
-        height: 100%;
-        background: white;
-    }
-    
-    .post-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    }
-    
-    .post-image {
-        height: 200px;
-        background-size: cover;
-        background-position: center;
-    }
-    
-    .post-content {
-        padding: 20px;
-    }
-    
-    .post-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-        line-height: 1.4;
-    }
-    
-    .post-meta {
-        color: #666;
-        font-size: 0.9rem;
-        margin-bottom: 10px;
-    }
-    
-    .post-excerpt {
-        color: #333;
-        font-size: 0.95rem;
-        margin-bottom: 15px;
-    }
-    
-    .category-badge {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 50px;
-        background: #f0f0f0;
-        color: #333;
-        font-size: 0.8rem;
-        margin-right: 5px;
-        margin-bottom: 5px;
-        transition: all 0.3s ease;
-    }
-    
-    .category-badge:hover {
-        background: #6a11cb;
-        color: white;
-    }
-    
-    .sidebar-card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        padding: 20px;
-        margin-bottom: 30px;
-    }
-    
-    .sidebar-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .popular-post {
-        display: flex;
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #f5f5f5;
-    }
-    
-    .popular-post:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-        margin-bottom: 0;
-    }
-    
-    .popular-post-image {
-        width: 80px;
-        height: 80px;
-        border-radius: 5px;
-        background-size: cover;
-        background-position: center;
-        margin-right: 15px;
-        flex-shrink: 0;
-    }
-    
-    .popular-post-content h5 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 5px;
-        line-height: 1.4;
-    }
-    
-    .popular-post-content .post-meta {
-        font-size: 0.8rem;
-    }
-    
-    .load-more-container {
-        text-align: center;
-        margin-top: 30px;
-        margin-bottom: 50px;
-    }
-    
-    .btn-load-more {
-        background: linear-gradient(to right, #6a11cb, #2575fc);
-        color: white;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 50px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .btn-load-more:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
-    }
-    
-    .search-form {
-        position: relative;
-        margin-bottom: 20px;
-    }
-    
-    .search-input {
-        width: 100%;
-        padding: 12px 15px;
-        padding-right: 50px;
-        border: 1px solid #eee;
-        border-radius: 50px;
-        font-size: 0.9rem;
-    }
-    
-    .search-button {
-        position: absolute;
-        right: 5px;
-        top: 5px;
-        background: linear-gradient(to right, #6a11cb, #2575fc);
-        color: white;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .search-button:hover {
-        transform: scale(1.05);
-    }
-    
-    .category-list {
-        list-style: none;
-        padding: 0;
-    }
-    
-    .category-list li {
-        margin-bottom: 10px;
-    }
-    
-    .category-list a {
-        display: block;
-        padding: 8px 15px;
-        background: #f8f9fa;
-        border-radius: 5px;
-        color: #333;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    
-    .category-list a:hover {
-        background: #6a11cb;
-        color: white;
-        transform: translateX(5px);
-    }
-    
-    .loader {
-        border: 5px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 5px solid #6a11cb;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto;
-        display: none;
-    }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    @media (max-width: 768px) {
-        .hero {
-            padding: 50px 0;
-        }
-        
-        .hero h1 {
-            font-size: 2rem;
-        }
-    }
-</style>
-{% endblock %}
+{% block title %}Home - BlogSite{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero">
-    <div class="container">
-        <h1>Welcome to Our Blog</h1>
-        <p>Discover the latest insights, tips, and stories from our writers</p>
-        {% if user.is_authenticated %}
-            <a href="{% url 'create_post' %}" class="btn btn-light">Create New Post</a>
-        {% else %}
-            <a href="{% url 'login' %}" class="btn btn-light">Sign In to Write</a>
+<div class="row">
+    <!-- Main Content -->
+    <div class="col-md-8">
+        <!-- Featured Post -->
+        {% if page_obj.object_list.0 %}
+        <div class="card mb-4 featured-post">
+            {% if page_obj.object_list.0.image %}
+            <img src="{{ page_obj.object_list.0.image.url }}" class="card-img-top" alt="{{ page_obj.object_list.0.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h2 class="card-title">{{ page_obj.object_list.0.title }}</h2>
+                <p class="card-text">{{ page_obj.object_list.0.content|safe|truncatewords_html:50 }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="author">
+                        <small class="text-muted">By {{ page_obj.object_list.0.author.username }}</small>
+                    </div>
+                    <a href="{% url 'post_detail' page_obj.object_list.0.slug %}" class="btn btn-primary">Read More</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Post Grid -->
+        <div class="row" id="posts-container">
+            {% for post in page_obj.object_list|slice:"1:" %}
+            <div class="col-md-6 mb-4">
+                {% include 'home/includes/post_card.html' %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Load More Button -->
+        {% if page_obj.has_next %}
+        <div class="text-center mb-4">
+            <button class="btn btn-primary" id="load-more" data-page="2">Load More</button>
+        </div>
         {% endif %}
     </div>
-</section>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <!-- Blog Posts -->
-        <div class="col-lg-8">
-            <div class="row" id="posts-container">
-                {% for post in page_obj %}
-                    {% include 'home/includes/post_card.html' %}
-                {% endfor %}
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        {% include 'home/includes/popular_posts.html' %}
+        <!-- Categories -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Categories</h5>
             </div>
-            
-            {% if page_obj.has_next %}
-            <div class="load-more-container">
-                <div class="loader" id="posts-loader"></div>
-                <button id="load-more" class="btn-load-more" data-page="2">Load More</button>
-            </div>
-            {% endif %}
-        </div>
-        
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Search -->
-            <div class="sidebar-card">
-                <form action="{% url 'search_posts' %}" method="GET" class="search-form">
-                    <input type="text" name="q" placeholder="Search posts..." class="search-input">
-                    <button type="submit" class="search-button">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </form>
-            </div>
-            
-            <!-- Categories -->
-            <div class="sidebar-card">
-                <h4 class="sidebar-title">Categories</h4>
-                <ul class="category-list">
+            <div class="card-body">
+                <div class="list-group">
                     {% for category in categories %}
-                    <li>
-                        <a href="{% url 'category_posts' category.slug %}">
-                            {{ category.name }}
-                        </a>
-                    </li>
+                    <a href="{% url 'category_posts' category.slug %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        {{ category.name }}
+                        <span class="badge bg-primary rounded-pill">{{ category.posts.count }}</span>
+                    </a>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
-            
-            <!-- Popular Posts -->
-            <div class="sidebar-card">
-                <h4 class="sidebar-title">Popular Posts</h4>
+        </div>
+
+        <!-- Popular Posts -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Popular Posts</h5>
+            </div>
+            <div class="card-body">
                 {% for post in popular_posts %}
-                <div class="popular-post">
-                    <div class="popular-post-image" style="background-image: url('{% if post.featured_image %}{{ post.featured_image.url }}{% else %}{% static 'img/placeholder.jpg' %}{% endif %}')"></div>
-                    <div class="popular-post-content">
-                        <h5><a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a></h5>
-                        <div class="post-meta">
-                            <span><i class="far fa-user"></i> {{ post.author.username }}</span>
-                            <span><i class="far fa-calendar"></i> {{ post.published_at|date:"M d, Y" }}</span>
-                        </div>
-                    </div>
+                <div class="mb-3">
+                    <h6><a href="{% url 'post_detail' post.slug %}" class="text-decoration-none">{{ post.title }}</a></h6>
+                    <small class="text-muted">{{ post.views }} views</small>
                 </div>
                 {% endfor %}
             </div>
@@ -323,40 +80,29 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const loadMoreBtn = document.getElementById('load-more');
-    const postsContainer = document.getElementById('posts-container');
-    const postsLoader = document.getElementById('posts-loader');
-    
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', function() {
-            const nextPage = loadMoreBtn.dataset.page;
-            loadMoreBtn.style.display = 'none';
-            postsLoader.style.display = 'block';
-            
-            fetch(`{% url 'load_more_posts' %}?page=${nextPage}`)
-                .then(response => response.json())
-                .then(data => {
-                    postsLoader.style.display = 'none';
-                    
-                    if (data.data) {
-                        postsContainer.insertAdjacentHTML('beforeend', data.data);
-                    }
-                    
-                    if (!data.end_pagination) {
-                        loadMoreBtn.dataset.page = parseInt(nextPage) + 1;
-                        loadMoreBtn.style.display = 'inline-block';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading more posts:', error);
-                    postsLoader.style.display = 'none';
-                    loadMoreBtn.style.display = 'inline-block';
-                });
+$(document).ready(function() {
+    $('#load-more').click(function() {
+        var button = $(this);
+        var page = button.data('page');
+        
+        $.ajax({
+            url: '{% url "load_more_posts" %}',
+            data: {
+                'page': page
+            },
+            success: function(response) {
+                if (response.data) {
+                    $('#posts-container').append(response.data);
+                    button.data('page', page + 1);
+                }
+                if (response.end_pagination) {
+                    button.remove();
+                }
+            }
         });
-    }
+    });
 });
 </script>
 {% endblock %}

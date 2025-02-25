@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-9cbkcnnauwm63272$zpn7xjpk51qkc+5%ksii#9phsm!u(!#8)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*']  # Add your domain when deploying
 
 
 # Application definition
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Home',
     'Authenticate',
+    'tinymce',
+    'Settings',
 ]
 
 MIDDLEWARE = [
@@ -117,8 +120,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files configuration
+MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
@@ -132,3 +141,39 @@ AUTH_USER_MODEL = 'Authenticate.CustomUser'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+
+# TinyMCE Configuration
+TINYMCE_DEFAULT_CONFIG = {
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 20,
+    'selector': 'textarea',
+    'theme': 'silver',
+    'height': 500,
+    'plugins': '''
+        paste emoticons autolink lists link image charmap print preview anchor
+        searchreplace visualblocks code fullscreen
+        insertdatetime media table code help wordcount
+    ''',
+    'toolbar1': '''
+        undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter 
+        alignright alignjustify | bullist numlist outdent indent | link image media | removeformat | help
+    ''',
+    'toolbar2': '',
+    'contextmenu': 'formats | link image',
+    'menubar': False,
+    'statusbar': True,
+    'content_style': 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 16px; line-height: 1.5; }',
+    'formats': {
+        'removeformat': [
+            {
+                'selector': '*',
+                'remove': 'all',
+                'split': True,
+                'expand': False,
+                'block_expand': True,
+                'deep': True
+            }
+        ]
+    }
+}
+
