@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-9cbkcnnauwm63272$zpn7xjpk51qkc+5%ksii#9phsm!u(!#8)
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']  # Add your domain when deploying
-
+CSRF_TRUSTED_ORIGINS = ['https://blogsite-6824.onrender.com/'] # change this in your deployment server
 
 # Application definition
 
