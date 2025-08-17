@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadMoreBtn.style.display = 'none';
             postsLoader.style.display = 'block';
             
-            fetch(`{% url 'load_more_category_posts' category.slug %}?page=${nextPage}`)
+            fetch(`{% url 'category_posts' category.slug %}?page=${nextPage}`)
                 .then(response => response.json())
                 .then(data => {
                     postsLoader.style.display = 'none';
