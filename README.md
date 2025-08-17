@@ -11,7 +11,7 @@ A simple Django-based blog application with authentication, TinyMCE editor, and 
 
 ## Live Demo
 
-[View the live demo](http://127.0.0.1:8000/)
+[View the live demo](https://blogsite-6824.onrender.com)
 
 ## Getting Started
 
